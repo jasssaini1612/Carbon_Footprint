@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<!-- =====================================================================
+     Campus Carbon Footprint & Sustainability Portal
+     A single-page website for an Environmental Science project.
+     Structure: Hero -> Calculator -> Overview cards -> Recommendations -> Footer
+     ===================================================================== -->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <!-- This tag makes the page scale properly on phones -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Campus Carbon Footprint &amp; Sustainability Portal</title>
+
+  <style>
+    /* ---------------------------------------------------------------
+       1. THEME COLORS
+       CSS variables let us change the whole color scheme in one place.
+       Use them anywhere with var(--name).
+       --------------------------------------------------------------- */
+    :root {
+      --green-soft: #e6f2e6;   /* page background */
+      --green-mid:  #8fc59a;   /* accents and borders */
+      --green-deep: #3f8f5a;   /* buttons and highlights */
+      --gray-dark:  #2f3437;   /* main text and dark sections */
+      --gray-mid:   #5a6266;   /* secondary text */
+      --white:      #ffffff;   /* card background */
+    }
+
+    /* ---------------------------------------------------------------
+       2. GENERAL RESET AND BASE STYLES
+       --------------------------------------------------------------- */
+    * { box-sizing: border-box; }   /* padding stays inside element width */
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Tahoma, Arial, sans-serif; /* clean font */
+      background: var(--green-soft);
+      color: var(--gray-dark);
+      line-height: 1.6;
+    }
+
+    /* A centered container that keeps content from stretching too wide */
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    section { padding: 40px 0; }
+
+    h2 { margin-top: 0; font-size: 1.7rem; }
+
+    /* ---------------------------------------------------------------
+       3. HERO / HEADER
+       --------------------------------------------------------------- */
+    header {
+      background: var(--gray-dark);
+      color: var(--white);
+      text-align: center;
+      padding: 70px 20px;
+      border-bottom: 6px solid var(--green-mid);
+    }
+    header h1 { margin: 0 0 10px; font-size: 2.3rem; }
+    header p  { margin: 0; font-size: 1.15rem; color: var(--green-mid); }
+
+    /* ---------------------------------------------------------------
+       4. CARD STYLE (reused by calculator and overview cards)
+       --------------------------------------------------------------- */
+    .card {
+      background: var(--white);
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      border-top: 4px solid var(--green-mid);
+    }
+
+    /* ---------------------------------------------------------------
+       5. CALCULATOR FORM
+       --------------------------------------------------------------- */
+    .calc-card { max-width: 600px; margin: 0 auto; }
+
+    label { display: block; margin: 16px 0 6px; font-weight: 600; }
+
+    input, select {
+      width: 100%;
+      padding: 10px;
+      font-size: 1rem;
+      border: 2px solid var(--green-mid);
+      border-radius: 8px;
+    }
+
+    button {
+      margin-top: 20px;
+      width: 100%;
+      padding: 12px;
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--white);
+      background: var(--green-deep);
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    button:hover { background: var(--gray-dark); }  /* changes on mouse-over */
+
+    /* Result box: hidden until the user clicks the button */
+    #result-box {
+      display: none;
+      margin-top: 24px;
+      padding: 18px;
+      border-radius: 10px;
+      background: var(--green-soft);
+      border-left: 6px solid var(--green-deep);
+    }
+    #result-value { font-size: 2rem; font-weight: 700; margin: 0; }
+    #result-message { margin: 8px 0 0; color: var(--gray-mid); }
+
+    /* ---------------------------------------------------------------
+       6. OVERVIEW GRID
+       auto-fit makes cards sit side by side on desktop and stack on
+       phones, with no extra media query needed.
+       --------------------------------------------------------------- */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+    }
+    .grid h3 { margin-top: 0; color: var(--green-deep); }
+    .grid p  { margin: 0; color: var(--gray-mid); }
+
+    /* ---------------------------------------------------------------
+       7. RECOMMENDATIONS LIST
+       --------------------------------------------------------------- */
+    .recs { background: var(--gray-dark); color: var(--white); }
+    .recs ul { padding-left: 20px; }
+    .recs li { margin-bottom: 14px; }
+    .recs strong { color: var(--green-mid); }
+
+    /* ---------------------------------------------------------------
+       8. FOOTER
+       --------------------------------------------------------------- */
+    footer {
+      text-align: center;
+      padding: 20px;
+      font-size: 0.9rem;
+      color: var(--gray-mid);
+    }
+
+    /* ---------------------------------------------------------------
+       9. RESPONSIVE RULES
+       Applies only on screens 600px wide or smaller (phones).
+       --------------------------------------------------------------- */
+    @media (max-width: 600px) {
+      header h1 { font-size: 1.7rem; }
+      header { padding: 50px 16px; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- =================== HERO / HEADER SECTION =================== -->
+  <header>
+    <h1>Campus Carbon Footprint &amp; Action Portal</h1>
+    <p>Estimating and Reducing Daily Emissions Across Our University</p>
+  </header>
+
+  <main>
+
+    <!-- =================== CALCULATOR SECTION =================== -->
+    <section id="calculator">
+      <div class="container">
+        <h2>Campus Commute Carbon Calculator</h2>
+
+        <div class="card calc-card">
+          <!-- Input 1: distance in kilometers -->
+          <label for="distance">Daily commute distance (km)</label>
+          <input type="number" id="distance" min="0" step="0.1"
+                 placeholder="e.g. 12 (total for the day, both ways)">
+
+          <!-- Input 2: transport mode. Each option's value is its
+               emission factor in kg CO₂ per km. -->
+          <label for="mode">Transport mode</label>
+          <select id="mode">
+            <option value="0">Walking / Bicycle (0 kg CO₂/km)</option>
+            <option value="0.04">Electric Scooter (0.04 kg CO₂/km)</option>
+            <option value="0.08">Bus (0.08 kg CO₂/km)</option>
+            <option value="0.12">Two-Wheeler / Motorbike (0.12 kg CO₂/km)</option>
+            <option value="0.19">Car (0.19 kg CO₂/km)</option>
+          </select>
+
+          <!-- Clicking this runs the calculateFootprint() function below -->
+          <button type="button" onclick="calculateFootprint()">Calculate Footprint</button>
+
+          <!-- Result box: JavaScript fills in the text and shows the box -->
+          <div id="result-box">
+            <p id="result-value"></p>
+            <p id="result-message"></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================== CAMPUS CARBON OVERVIEW =================== -->
+    <section id="overview">
+      <div class="container">
+        <h2>Where Campus Emissions Come From</h2>
+
+        <div class="grid">
+          <!-- Card 1 -->
+          <div class="card">
+            <h3>Daily Commuting &amp; Transport</h3>
+            <p>Students and staff travelling by car and motorbike burn fuel every day. Shared and electric options cut emissions per person.</p>
+          </div>
+
+          <!-- Card 2 -->
+          <div class="card">
+            <h3>Classroom &amp; Hostel Energy</h3>
+            <p>Lights, fans, air conditioners and computers use electricity, which often comes from fossil fuels.</p>
+          </div>
+
+          <!-- Card 3 -->
+          <div class="card">
+            <h3>Canteen Food Waste &amp; Packaging</h3>
+            <p>Wasted food rots in landfills and releases methane, while single-use packaging adds plastic waste.</p>
+          </div>
+
+          <!-- Card 4 -->
+          <div class="card">
+            <h3>Paper &amp; Printing Lifecycle</h3>
+            <p>Making, printing and discarding paper uses trees, water and energy. Digital submission reduces all three.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================== RECOMMENDATIONS SECTION =================== -->
+    <section class="recs" id="recommendations">
+      <div class="container">
+        <h2>Recommendations for University Administration</h2>
+        <ul>
+          <li><strong>Dedicated shuttle services:</strong> run electric or CNG shuttles between hostels, bus stops and academic blocks to reduce private vehicle use.</li>
+          <li><strong>Paperless submission rules:</strong> accept assignments, forms and notices online, and make double-sided printing the default.</li>
+          <li><strong>Cafeteria composting:</strong> turn food scraps into compost for campus gardens and replace disposable packaging with reusable plates.</li>
+          <li><strong>Solar energy:</strong> install rooftop solar panels on hostels and academic buildings to lower grid electricity demand.</li>
+        </ul>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- =================== FOOTER =================== -->
+  <footer>
+    <p>Environmental Science Project &mdash; Campus Carbon Footprint &amp; Sustainability Portal</p>
+  </footer>
+
+  <!-- =====================================================================
+       JAVASCRIPT: powers the calculator.
+       Flow: read inputs -> check them -> multiply -> show result.
+       ===================================================================== -->
+  <script>
+    function calculateFootprint() {
+
+      // Step 1: Read the values the user entered.
+      // .value always gives text, so Number() converts it to a number.
+      var distance = Number(document.getElementById("distance").value);
+      var factor = Number(document.getElementById("mode").value);
+
+      // Step 2: Get the result elements so we can update them.
+      var resultBox = document.getElementById("result-box");
+      var resultValue = document.getElementById("result-value");
+      var resultMessage = document.getElementById("result-message");
+
+      // Step 3: Show the result box (it is hidden by default in CSS).
+      resultBox.style.display = "block";
+
+      // Step 4: Validate. If the distance is empty, zero or negative,
+      // ask for a valid number and stop the function with return.
+      if (distance <= 0) {
+        resultValue.innerHTML = "Please enter a distance";
+        resultMessage.innerHTML = "Type a number greater than 0 in the distance field.";
+        return;
+      }
+
+      // Step 5: Calculate. Emissions (kg) = distance (km) x factor (kg/km).
+      var emissions = distance * factor;
+
+      // Step 6: Show the result, rounded to 2 decimal places.
+      resultValue.innerHTML = emissions.toFixed(2) + " kg CO₂ per day";
+
+      // Step 7: Choose a personalized recommendation using if/else.
+      if (emissions === 0) {
+        resultMessage.innerHTML = "Excellent! Your commute produces zero emissions. Keep walking or cycling.";
+      } else if (emissions < 1) {
+        resultMessage.innerHTML = "Low footprint. You are doing well. Try walking or cycling for short trips.";
+      } else if (emissions < 3) {
+        resultMessage.innerHTML = "Moderate footprint. Consider carpooling or taking the bus a few days a week.";
+      } else {
+        resultMessage.innerHTML = "High footprint. Switching to the bus, an electric scooter or a shared ride would cut your emissions a lot.";
+      }
+    }
+  </script>
+
+</body>
+</html>
