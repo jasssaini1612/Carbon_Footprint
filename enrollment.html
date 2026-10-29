@@ -1,0 +1,56 @@
+Result Size: 492 x 610
+<!DOCTYPE html>
+<html>
+<body>
+
+<h1>My First Heading</h1>
+
+<p>My first paragraph.</p>
+
+</body>
+</html>
+
+
+      flag('phone', phoneBad); flag('course', courseBad);
+      return !(nameBad || emailBad || phoneBad || courseBad);
+    }
+​
+    function show(text, type) { $('msg').textContent = text; $('msg').className = 'msg ' + type; }
+​
+    $('f').addEventListener('submit', function (e) {
+      e.preventDefault();
+      $('msg').className = 'msg';
+      if (!validate()) return;
+​
+      const data = {
+        name: $('name').value.trim(),
+        email: $('email').value.trim(),
+        phone: $('phone').value.trim(),
+        course: $('course').value,
+        mode: document.querySelector('input[name="mode"]:checked').value,
+        startDate: $('startDate').value,
+        message: $('message').value.trim()
+      };
+​
+      $('btn').disabled = true;
+      $('btn').textContent = 'Submitting...';
+​
+      google.script.run
+        .withSuccessHandler(function () {
+          show('🎉 Enrollment submitted successfully!', 'success');
+          $('f').reset();
+          $('btn').disabled = false;
+          $('btn').textContent = 'Enroll Now';
+        })
+        .withFailureHandler(function (err) {
+          show('Error: ' + err.message, 'error');
+          $('btn').disabled = false;
+          $('btn').textContent = 'Enroll Now';
+        })
+        .saveEnrollment(data);
+    });
+  </script>
+</body>
+</html>
+
+
