@@ -1,10 +1,73 @@
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  apiKey: "AIzaSyA4GYY_znCX4-ntGFKmY9KRtKavzvQVD4I",
-  authDomain: "carbon-footprint-ef8c1.firebaseapp.com",
-  projectId: "carbon-footprint-ef8c1",
-  storageBucket: "carbon-footprint-ef8c1.firebasestorage.app",
-  messagingSenderId: "352925745635",
-  appId: "1:352925745635:web:4afa642e13f9f13a5120d6",
-  measurementId: "G-39L5M35QPR"
-};
+
+<form id="loginForm">
+  <input
+    type="email"
+    id="email"
+    placeholder="Enter your email"
+    required
+  />
+
+  <input
+    type="password"
+    id="password"
+    placeholder="Enter your password"
+    required
+  />
+
+  <div style="text-align: right; margin: 10px 0;">
+    <a href="#" id="forgotPassword"
+       style="color: #16a34a; text-decoration: none;">
+      Forgot Password?
+    </a>
+  </div>
+
+  <button type="submit">Login</button>
+
+  <p id="message"></p>
+</form>
+
+<script type="module">
+  import { initializeApp }
+    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+  import {
+    getAuth,
+    sendPasswordResetEmail
+  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "carbon-footprint-ef8c1.firebaseapp.com",
+    projectId: "carbon-footprint-ef8c1",
+    storageBucket: "carbon-footprint-ef8c1.firebasestorage.app",
+    messagingSenderId: "352925745635",
+    appId: "1:4afa642e13f9f13a5120d6"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  document.getElementById("forgotPassword")
+    .addEventListener("click", async (e) => {
+      e.preventDefault();
+
+      const email = document.getElementById("email").value.trim();
+      const message = document.getElementById("message");
+
+      if (!email) {
+        message.textContent =
+          "Please enter your email address first.";
+        return;
+      }
+
+      try {
+        await sendPasswordResetEmail(auth, email);
+        message.textContent =
+          "Password reset link sent. Check your email.";
+      } catch (error) {
+        console.error(error);
+        message.textContent =
+          "Could not send reset email. Please try again.";
+      }
+    });
+</script>
