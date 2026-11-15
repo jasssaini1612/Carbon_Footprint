@@ -1,1557 +1,393 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Carbon Footprint Calculator | Campus EcoTrack</title>
-
-<style>
-:root {
-  --bg: #edf5ed;
-  --surface: #ffffff;
-  --text: #26352b;
-  --muted: #66756a;
-  --primary: #348653;
-  --primary-dark: #24663d;
-  --border: #d8e7d9;
-  --header: #24342b;
-  --soft: #e3f1e5;
-  --shadow: 0 4px 18px rgba(0,0,0,.07);
-}
-
-body.dark {
-  --bg: #121c17;
-  --surface: #1e2c23;
-  --text: #edf5ed;
-  --muted: #b1c1b4;
-  --primary: #73c78a;
-  --primary-dark: #4b9b63;
-  --border: #354b3b;
-  --header: #0b130e;
-  --soft: #263b2c;
-  --shadow: 0 4px 18px rgba(0,0,0,.2);
-}
-
-* {
-  box-sizing: border-box;
-  scroll-behavior: smooth;
-}
-
-body {
-  margin: 0;
-  font-family: "Segoe UI", Arial, sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  line-height: 1.6;
-  transition: .3s;
-}
-
-.container {
-  width: 92%;
-  max-width: 1150px;
-  margin: auto;
-}
-
-section {
-  padding: 55px 0;
-  scroll-margin-top: 85px;
-}
-
-h2 {
-  font-size: 1.9rem;
-  margin-top: 0;
-}
-
-h3 {
-  color: var(--primary);
-}
-
-p {
-  color: var(--muted);
-}
-
-a {
-  text-decoration: none;
-}
-
-/* NAVIGATION */
-
-.navbar {
-  background: var(--header);
-  color: white;
-  padding: 13px 4%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 15px;
-  flex-wrap: wrap;
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-}
-
-.logo {
-  font-size: 1.3rem;
-  font-weight: bold;
-  color: #9cdaa9;
-}
-
-.nav-links {
-  display: flex;
-  align-items: center;
-  gap: 18px;
-  flex-wrap: wrap;
-}
-
-.nav-links a {
-  color: white;
-  font-size: .9rem;
-}
-
-.nav-links a:hover {
-  color: #9cdaa9;
-}
-
-.theme-btn {
-  border: 1px solid #83bb90;
-  background: transparent;
-  color: white;
-  padding: 8px 12px;
-  border-radius: 7px;
-  cursor: pointer;
-}
-
-/* HEADER */
-
-header {
-  background: var(--header);
-  color: white;
-  text-align: center;
-  padding: 75px 20px;
-  border-bottom: 6px solid var(--primary);
-}
-
-header h1 {
-  font-size: clamp(2rem, 5vw, 3rem);
-  margin: 0 0 12px;
-}
-
-header p {
-  color: #b9d9bf;
-  font-size: 1.1rem;
-}
-
-.header-buttons {
-  display: flex;
-  justify-content: center;
-  gap: 14px;
-  flex-wrap: wrap;
-  margin-top: 25px;
-}
-
-.btn {
-  display: inline-block;
-  padding: 12px 24px;
-  background: var(--primary);
-  color: white;
-  border-radius: 8px;
-  font-weight: 600;
-  border: 2px solid var(--primary);
-  cursor: pointer;
-}
-
-.btn:hover {
-  background: var(--primary-dark);
-}
-
-.btn-outline {
-  background: transparent;
-  border-color: #a4d5ad;
-  color: white;
-}
-
-.btn-outline:hover {
-  background: var(--primary-dark);
-}
-
-/* CARDS */
-
-.card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-top: 4px solid var(--primary);
-  border-radius: 13px;
-  padding: 23px;
-  box-shadow: var(--shadow);
-  transition: transform .2s;
-}
-
-.card:hover {
-  transform: translateY(-3px);
-}
-
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-  gap: 20px;
-}
-
-.card p {
-  margin-bottom: 0;
-}
-
-/* CALCULATOR */
-
-.calc-card {
-  max-width: 850px;
-  margin: auto;
-}
-
-.form-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 15px;
-}
-
-.field {
-  margin-bottom: 13px;
-}
-
-label {
-  display: block;
-  font-weight: 600;
-  margin-bottom: 6px;
-}
-
-input, select {
-  width: 100%;
-  padding: 12px;
-  border: 1px solid var(--border);
-  background: var(--bg);
-  color: var(--text);
-  border-radius: 8px;
-  font-size: 1rem;
-}
-
-input:focus, select:focus {
-  outline: 2px solid var(--primary);
-}
-
-.subheading {
-  color: var(--primary);
-  border-bottom: 1px solid var(--border);
-  padding-bottom: 8px;
-  margin-top: 28px;
-}
-
-.calc-btn {
-  width: 100%;
-  padding: 15px;
-  border: none;
-  border-radius: 8px;
-  color: white;
-  background: var(--primary);
-  font-size: 1.05rem;
-  font-weight: bold;
-  cursor: pointer;
-  margin-top: 20px;
-}
-
-.calc-btn:hover {
-  background: var(--primary-dark);
-}
-
-/* RESULTS */
-
-#results {
-  display: none;
-  margin-top: 30px;
-}
-
-.result-main {
-  background: var(--soft);
-  border-radius: 12px;
-  padding: 25px;
-  text-align: center;
-}
-
-.result-main h3 {
-  margin: 0;
-}
-
-.big-number {
-  font-size: 2.5rem;
-  font-weight: bold;
-  color: var(--primary);
-}
-
-.result-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 12px;
-  margin-top: 20px;
-}
-
-.result-item {
-  padding: 18px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-}
-
-.result-item strong {
-  display: block;
-  font-size: 1.25rem;
-  color: var(--primary);
-}
-
-.bar {
-  height: 12px;
-  background: var(--border);
-  border-radius: 10px;
-  overflow: hidden;
-  margin: 7px 0 15px;
-}
-
-.bar-fill {
-  height: 100%;
-  background: var(--primary);
-  width: 0;
-  transition: width .5s;
-}
-
-#recommendation-results {
-  padding-left: 20px;
-}
-
-/* RECOMMENDATIONS */
-
-.recs {
-  background: var(--header);
-  color: white;
-}
-
-.recs h2 {
-  color: white;
-}
-
-.recs li {
-  margin-bottom: 15px;
-}
-
-.recs strong {
-  color: #a9dcb1;
-}
-
-/* KNOWLEDGE CENTRE */
-
-.knowledge-card {
-  cursor: pointer;
-}
-
-.knowledge-card h3 {
-  margin-top: 0;
-}
-
-.knowledge-content {
-  display: none;
-  margin-top: 15px;
-  border-top: 1px solid var(--border);
-  padding-top: 12px;
-}
-
-.knowledge-card.active .knowledge-content {
-  display: block;
-}
-
-.learn-more {
-  color: var(--primary);
-  font-weight: bold;
-  font-size: .9rem;
-}
-
-/* SDG */
-
-.sdg-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
-  gap: 15px;
-}
-
-.sdg {
-  padding: 20px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  text-align: center;
-}
-
-/* FOOTER */
-
-footer {
-  text-align: center;
-  background: var(--header);
-  color: white;
-  padding: 25px;
-}
-
-footer p {
-  color: #b9d9bf;
-}
-
-footer a {
-  color: #a9dcb1;
-}
-
-/* RESPONSIVE */
-
-@media(max-width:700px) {
-  .navbar {
-    justify-content: center;
-  }
-
-  .nav-links {
-    justify-content: center;
-    gap: 12px;
-  }
-
-  .form-grid {
-    grid-template-columns: 1fr;
-  }
-
-  header {
-    padding: 50px 15px;
-  }
-
-  section {
-    padding: 38px 0;
-  }
-}
-
-@media print {
-  .navbar, header, footer, .calc-btn, .header-buttons {
-    display: none !important;
-  }
-
-  body {
-    background: white;
-    color: black;
-  }
-
-  #results {
-    display: block !important;
-  }
-
-  .card, .result-item {
-    box-shadow: none;
-  }
-}
-</style>
-</head>
-
-<body>
-
-<!-- NAVIGATION -->
-
-<nav class="navbar">
-  <div class="logo">🌿 Campus EcoTrack</div>
-
-  <div class="nav-links">
-    <a href="#home">Home</a>
-    <a href="#calculator">Calculator</a>
-    <a href="#overview">Overview</a>
-    <a href="#recommendations">Solutions</a>
-    <a href="#knowledge">Knowledge</a>
-    <a href="#campus">Green Campus</a>
-    <a href="enrollment.html">Enroll</a>
-  </div>
-
-  <button class="theme-btn" onclick="toggleTheme()" id="themeBtn">
-    🌙 Dark Mode
-  </button>
-</nav>
-
-<!-- HEADER -->
-
-<header id="home">
-  <h1>Campus Carbon Footprint & Action Portal</h1>
-
-  <p>
-    Estimating and Reducing Daily Emissions Across Our University
-  </p>
-
-  <div class="header-buttons">
-    <a href="auth.html" class="btn">
-      Login / Sign Up
-    </a>
-
-    <a href="enrollment.html" class="btn btn-outline">
-      Enroll Now
-    </a>
-
-    <a href="#calculator" class="btn btn-outline">
-      Calculate Footprint
-    </a>
-  </div>
-</header>
-
-<main>
-
-<!-- INTRODUCTION -->
-
-<section>
-  <div class="container">
-    <div class="card">
-      <h2>Welcome to Campus EcoTrack</h2>
-
-      <p>
-        Campus EcoTrack is a sustainability initiative designed to
-        understand, monitor and reduce carbon emissions generated
-        through everyday university activities.
-      </p>
-
-      <p>
-        Students, faculty and university administrators can use
-        this platform to understand their environmental impact
-        and take practical steps towards a greener future.
-      </p>
-    </div>
-  </div>
-</section>
-
-<!-- ADVANCED CALCULATOR -->
-
-<section id="calculator">
-  <div class="container">
-
-    <h2>🌍 Advanced Carbon Footprint Calculator</h2>
-
-    <p>
-      Enter your average daily activities to estimate your
-      environmental footprint.
-    </p>
-
-    <div class="card calc-card">
-
-      <form id="carbonForm">
-
-        <!-- TRANSPORT -->
-
-        <h3 class="subheading">🚗 1. Transportation</h3>
-
-        <div class="form-grid">
-
-          <div class="field">
-            <label for="distance">Daily travel distance (km)</label>
-            <input type="number" id="distance" min="0"
-              step="0.1" value="0">
-          </div>
-
-          <div class="field">
-            <label for="mode">Transport mode</label>
-            <select id="mode">
-              <option value="0">Walking / Bicycle</option>
-              <option value="0.04">Electric Scooter</option>
-              <option value="0.08">Bus</option>
-              <option value="0.12">Motorbike</option>
-              <option value="0.19">Car</option>
-            </select>
-          </div>
-
-          <div class="field">
-            <label for="travelDays">Travel days per week</label>
-            <input type="number" id="travelDays"
-              min="0" max="7" value="5">
-          </div>
-
-          <div class="field">
-            <label for="passengers">Number of passengers sharing vehicle</label>
-            <input type="number" id="passengers"
-              min="1" value="1">
-          </div>
-
-        </div>
-
-        <!-- ELECTRICITY -->
-
-        <h3 class="subheading">⚡ 2. Electricity Consumption</h3>
-
-        <p>Enter the approximate hours and minutes of daily usage.</p>
-
-        <div class="form-grid">
-
-          <div class="field">
-            <label for="acCount">Number of AC units</label>
-            <input type="number" id="acCount" min="0" value="0">
-          </div>
-
-          <div class="field">
-            <label for="acHours">AC usage hours per day</label>
-            <input type="number" id="acHours" min="0" max="24" value="0">
-          </div>
-
-          <div class="field">
-            <label for="acMinutes">Additional AC minutes</label>
-            <input type="number" id="acMinutes" min="0" max="59" value="0">
-          </div>
-
-          <div class="field">
-            <label for="fanCount">Number of fans</label>
-            <input type="number" id="fanCount" min="0" value="0">
-          </div>
-
-          <div class="field">
-            <label for="fanHours">Fan usage hours per day</label>
-            <input type="number" id="fanHours" min="0" max="24" value="0">
-          </div>
-
-          <div class="field">
-            <label for="fanMinutes">Additional fan minutes</label>
-            <input type="number" id="fanMinutes" min="0" max="59" value="0">
-          </div>
-
-          <div class="field">
-            <label for="lightCount">Number of lights</label>
-            <input type="number" id="lightCount" min="0" value="0">
-          </div>
-
-          <div class="field">
-            <label for="lightHours">Light usage hours</label>
-            <input type="number" id="lightHours" min="0" max="24" value="0">
-          </div>
-
-          <div class="field">
-            <label for="computerCount">Computers / Laptops</label>
-            <input type="number" id="computerCount" min="0" value="0">
-          </div>
-
-          <div class="field">
-            <label for="computerHours">Computer usage hours</label>
-            <input type="number" id="computerHours" min="0" max="24" value="0">
-          </div>
-
-          <div class="field">
-            <label for="mobileCount">Mobile phones charged</label>
-            <input type="number" id="mobileCount" min="0" value="1">
-          </div>
-
-          <div class="field">
-            <label for="chargeHours">Mobile charging hours</label>
-            <input type="number" id="chargeHours" min="0" max="24" value="2">
-          </div>
-
-          <div class="field">
-            <label for="otherWatts">Other appliances power (Watts)</label>
-            <input type="number" id="otherWatts" min="0" value="0">
-          </div>
-
-          <div class="field">
-            <label for="otherHours">Other appliances usage hours</label>
-            <input type="number" id="otherHours" min="0" max="24" value="0">
-          </div>
-
-        </div>
-
-        <!-- WASTE -->
-
-        <h3 class="subheading">♻️ 3. Waste & Resource Consumption</h3>
-
-        <div class="form-grid">
-
-          <div class="field">
-            <label for="cups">Paper cups used per day</label>
-            <input type="number" id="cups" min="0" value="0">
-          </div>
-
-          <div class="field">
-            <label for="bottles">Plastic bottles used per day</label>
-            <input type="number" id="bottles" min="0" value="0">
-          </div>
-
-          <div class="field">
-            <label for="paper">Paper sheets used per day</label>
-            <input type="number" id="paper" min="0" value="0">
-          </div>
-
-          <div class="field">
-            <label for="foodWaste">Food waste per day (kg)</label>
-            <input type="number" id="foodWaste" min="0" step="0.1" value="0">
-          </div>
-
-        </div>
-
-        <!-- WATER -->
-
-        <h3 class="subheading">💧 4. Water Consumption</h3>
-
-        <div class="form-grid">
-
-          <div class="field">
-            <label for="water">Water consumption per day (litres)</label>
-            <input type="number" id="water" min="0" value="0">
-          </div>
-
-          <div class="field">
-            <label for="waterWaste">Estimated water wasted per day (litres)</label>
-            <input type="number" id="waterWaste" min="0" value="0">
-          </div>
-
-        </div>
-
-        <!-- FOOD -->
-
-        <h3 class="subheading">🥗 5. Food Habits</h3>
-
-        <div class="form-grid">
-
-          <div class="field">
-            <label for="vegMeals">Vegetarian meals per day</label>
-            <input type="number" id="vegMeals" min="0" value="3">
-          </div>
-
-          <div class="field">
-            <label for="nonVegMeals">Non-vegetarian meals per day</label>
-            <input type="number" id="nonVegMeals" min="0" value="0">
-          </div>
-
-        </div>
-
-        <button type="submit" class="calc-btn">
-          Calculate My Carbon Footprint
-        </button>
-
-      </form>
-
-      <!-- RESULTS -->
-
-      <div id="results">
-
-        <div class="result-main">
-          <h3>Your Estimated Carbon Footprint</h3>
-          <div class="big-number" id="totalEmission">0</div>
-          <p>kg CO₂e per day</p>
-
-          <p id="resultMessage"></p>
-        </div>
-
-        <div class="result-grid">
-
-          <div class="result-item">
-            🚗 Transportation
-            <strong id="transportResult">0</strong>
-            <small>kg CO₂e/day</small>
-          </div>
-
-          <div class="result-item">
-            ⚡ Electricity
-            <strong id="electricityResult">0</strong>
-            <small>kg CO₂e/day</small>
-          </div>
-
-          <div class="result-item">
-            ♻️ Waste
-            <strong id="wasteResult">0</strong>
-            <small>kg CO₂e/day</small>
-          </div>
-
-          <div class="result-item">
-            💧 Water
-            <strong id="waterResult">0</strong>
-            <small>kg CO₂e/day</small>
-          </div>
-
-          <div class="result-item">
-            🥗 Food
-            <strong id="foodResult">0</strong>
-            <small>kg CO₂e/day</small>
-          </div>
-
-        </div>
-
-        <h3>Emission Breakdown</h3>
-
-        <div id="breakdown"></div>
-
-        <div class="card">
-          <h3>📊 Your Estimated Projections</h3>
-
-          <p>Monthly emissions:</p>
-          <strong id="monthlyResult">0</strong> kg CO₂e
-
-          <p>Yearly emissions:</p>
-          <strong id="yearlyResult">0</strong> kg CO₂e
-        </div>
-
-        <div class="card" style="margin-top:20px">
-          <h3>🌱 Personalized Reduction Plan</h3>
-          <ul id="recommendation-results"></ul>
-        </div>
-
-        <div style="display:flex;gap:10px;flex-wrap:wrap">
-          <button type="button" class="calc-btn"
-            onclick="window.print()">
-            Download / Print Report
-          </button>
-
-          <button type="button" class="calc-btn"
-            onclick="document.getElementById('results').scrollIntoView()">
-            View My Results
-          </button>
-        </div>
-
-      </div>
-
-      <p style="font-size:.82rem;margin-top:20px">
-        Note: Results are approximate estimates based on illustrative
-        emission factors. Actual emissions vary by appliance efficiency,
-        electricity source, vehicle type, occupancy, materials and local
-        conditions. Water and food estimates use simplified assumptions.
-      </p>
-
-    </div>
-  </div>
-</section>
-
-<!-- CAMPUS OVERVIEW -->
-
-<section id="overview">
-  <div class="container">
-
-    <h2>Where Campus Emissions Come From</h2>
-
-    <div class="grid">
-
-      <div class="card">
-        <h3>🚗 Daily Commuting & Transport</h3>
-        <p>
-          Students and staff travelling by cars and motorbikes
-          generate emissions. Shared transport and cycling can
-          reduce the environmental impact.
-        </p>
-      </div>
-
-      <div class="card">
-        <h3>⚡ Classroom & Hostel Energy</h3>
-        <p>
-          Lights, fans, air conditioners and computers consume
-          electricity. Energy-efficient appliances and responsible
-          usage can reduce emissions.
-        </p>
-      </div>
-
-      <div class="card">
-        <h3>♻️ Canteen Food Waste & Packaging</h3>
-        <p>
-          Food waste and single-use packaging contribute to
-          environmental pollution and greenhouse gas emissions.
-        </p>
-      </div>
-
-      <div class="card">
-        <h3>📄 Paper & Printing Lifecycle</h3>
-        <p>
-          Paper production and printing require trees, water and
-          energy. Digital submissions and double-sided printing
-          help conserve resources.
-        </p>
-      </div>
-
-    </div>
-  </div>
-</section>
-
-<!-- REDUCTION RECOMMENDATIONS -->
-
-<section class="recs" id="recommendations">
-  <div class="container">
-
-    <h2>🌿 Steps to Reduce Carbon Emissions</h2>
-
-    <ul>
-      <li>
-        <strong>Use Sustainable Transport:</strong>
-        Walk, cycle, carpool or use public transport whenever possible.
-      </li>
-
-      <li>
-        <strong>Reduce Electricity Consumption:</strong>
-        Switch off lights, fans and ACs when they are not needed.
-      </li>
-
-      <li>
-        <strong>Choose Reusable Products:</strong>
-        Carry reusable bottles, cups and bags instead of disposable ones.
-      </li>
-
-      <li>
-        <strong>Reduce Food Waste:</strong>
-        Take only the food you need and support composting initiatives.
-      </li>
-
-      <li>
-        <strong>Save Water:</strong>
-        Close taps, repair leaks and encourage rainwater harvesting.
-      </li>
-
-      <li>
-        <strong>Go Paperless:</strong>
-        Use digital assignments, notices and learning materials.
-      </li>
-
-      <li>
-        <strong>Plant and Protect Trees:</strong>
-        Participate in campus plantation and biodiversity programmes.
-      </li>
-
-      <li>
-        <strong>Use Renewable Energy:</strong>
-        Encourage solar panels and energy-efficient campus buildings.
-      </li>
-    </ul>
-
-  </div>
-</section>
-
-<!-- KNOWLEDGE CENTRE -->
-
-<section id="knowledge">
-  <div class="container">
-
-    <h2>📚 Sustainability Knowledge Centre</h2>
-
-    <p>
-      Explore environmental topics and learn how individuals
-      and institutions can protect the planet.
-      Click on any topic to explore.
-    </p>
-
-    <div class="grid">
-
-      <div class="card knowledge-card" onclick="toggleKnowledge(this)">
-        <h3>🌍 Climate Change & Global Warming</h3>
-        <p>Understand climate change and its environmental effects.</p>
-        <span class="learn-more">Explore topic +</span>
-
-        <div class="knowledge-content">
-          <p>
-            Climate change refers to long-term changes in temperature
-            and weather patterns. Human activities such as fossil fuel
-            combustion, deforestation and industrial processes increase
-            greenhouse gas concentrations.
-          </p>
-          <strong>Protective steps:</strong>
-          <ul>
-            <li>Reduce fossil fuel consumption.</li>
-            <li>Promote clean energy.</li>
-            <li>Protect forests.</li>
-            <li>Reduce waste and pollution.</li>
-          </ul>
-        </div>
-      </div>
-
-      <div class="card knowledge-card" onclick="toggleKnowledge(this)">
-        <h3>☀️ Renewable Energy</h3>
-        <p>Discover sustainable sources of energy.</p>
-        <span class="learn-more">Explore topic +</span>
-
-        <div class="knowledge-content">
-          <p>
-            Renewable energy comes from naturally replenished
-            sources such as sunlight, wind and flowing water.
-          </p>
-          <strong>Major types:</strong>
-          <ul>
-            <li>Solar energy.</li>
-            <li>Wind energy.</li>
-            <li>Hydroelectric energy.</li>
-            <li>Geothermal energy.</li>
-            <li>Biomass energy.</li>
-          </ul>
-        </div>
-      </div>
-
-      <div class="card knowledge-card" onclick="toggleKnowledge(this)">
-        <h3>♻️ Waste Management</h3>
-        <p>Learn responsible waste management methods.</p>
-        <span class="learn-more">Explore topic +</span>
-
-        <div class="knowledge-content">
-          <p>
-            Waste management involves collecting, separating,
-            treating and disposing of waste responsibly.
-          </p>
-          <strong>Five Rs:</strong>
-          <ul>
-            <li>Refuse unnecessary products.</li>
-            <li>Reduce consumption.</li>
-            <li>Reuse materials.</li>
-            <li>Repurpose old products.</li>
-            <li>Recycle suitable materials.</li>
-          </ul>
-        </div>
-      </div>
-
-      <div class="card knowledge-card" onclick="toggleKnowledge(this)">
-        <h3>🌳 Biodiversity & Ecosystems</h3>
-        <p>Understand the importance of protecting living organisms.</p>
-        <span class="learn-more">Explore topic +</span>
-
-        <div class="knowledge-content">
-          <p>
-            Biodiversity includes the variety of plants, animals
-            and microorganisms. Healthy ecosystems support food
-            chains, pollination, soil fertility and clean water.
-          </p>
-          <strong>Protection methods:</strong>
-          <ul>
-            <li>Protect natural habitats.</li>
-            <li>Prevent deforestation.</li>
-            <li>Reduce pollution.</li>
-            <li>Support wildlife conservation.</li>
-          </ul>
-        </div>
-      </div>
-
-      <div class="card knowledge-card" onclick="toggleKnowledge(this)">
-        <h3>💧 Water Conservation</h3>
-        <p>Learn how to protect freshwater resources.</p>
-        <span class="learn-more">Explore topic +</span>
-
-        <div class="knowledge-content">
-          <p>
-            Water conservation means using water efficiently
-            and protecting freshwater resources.
-          </p>
-          <strong>Methods:</strong>
-          <ul>
-            <li>Rainwater harvesting.</li>
-            <li>Repair leaking taps.</li>
-            <li>Reuse treated wastewater.</li>
-            <li>Protect rivers and lakes.</li>
-          </ul>
-        </div>
-      </div>
-
-      <div class="card knowledge-card" onclick="toggleKnowledge(this)">
-        <h3>🌱 Sustainable Development</h3>
-        <p>Learn how development can protect future generations.</p>
-        <span class="learn-more">Explore topic +</span>
-
-        <div class="knowledge-content">
-          <p>
-            Sustainable development meets present needs without
-            compromising the ability of future generations to
-            meet their own needs.
-          </p>
-          <strong>Three main pillars:</strong>
-          <ul>
-            <li>Environmental sustainability.</li>
-            <li>Social sustainability.</li>
-            <li>Economic sustainability.</li>
-          </ul>
-        </div>
-      </div>
-
-    </div>
-  </div>
-</section>
-
-<!-- SDG SECTION -->
-
-<section id="sdgs">
-  <div class="container">
-
-    <h2>🌏 United Nations Sustainable Development Goals</h2>
-
-    <p>
-      The 17 Sustainable Development Goals provide a global
-      framework for creating a sustainable future.
-    </p>
-
-    <div class="sdg-grid">
-
-      <div class="sdg">
-        <h3>SDG 6</h3>
-        <strong>Clean Water and Sanitation</strong>
-      </div>
-
-      <div class="sdg">
-        <h3>SDG 7</h3>
-        <strong>Affordable and Clean Energy</strong>
-      </div>
-
-      <div class="sdg">
-        <h3>SDG 11</h3>
-        <strong>Sustainable Cities and Communities</strong>
-      </div>
-
-      <div class="sdg">
-        <h3>SDG 12</h3>
-        <strong>Responsible Consumption and Production</strong>
-      </div>
-
-      <div class="sdg">
-        <h3>SDG 13</h3>
-        <strong>Climate Action</strong>
-      </div>
-
-      <div class="sdg">
-        <h3>SDG 14</h3>
-        <strong>Life Below Water</strong>
-      </div>
-
-      <div class="sdg">
-        <h3>SDG 15</h3>
-        <strong>Life on Land</strong>
-      </div>
-
-      <div class="sdg">
-        <h3>SDG 17</h3>
-        <strong>Partnerships for the Goals</strong>
-      </div>
-
-    </div>
-
-  </div>
-</section>
-
-<!-- GREEN CAMPUS -->
-
-<section id="campus">
-  <div class="container">
-
-    <h2>🏫 Building a Green University Campus</h2>
-
-    <div class="grid">
-
-      <div class="card">
-        <h3>☀️ Solar Campus</h3>
-        <p>
-          Install rooftop solar panels to support clean
-          electricity generation.
-        </p>
-      </div>
-
-      <div class="card">
-        <h3>🌳 Green Campus</h3>
-        <p>
-          Increase green spaces, plant native trees and
-          protect biodiversity.
-        </p>
-      </div>
-
-      <div class="card">
-        <h3>🚲 Green Transportation</h3>
-        <p>
-          Introduce bicycle facilities, shared transport
-          and electric campus shuttles.
-        </p>
-      </div>
-
-      <div class="card">
-        <h3>💧 Water Management</h3>
-        <p>
-          Encourage rainwater harvesting and responsible
-          water consumption.
-        </p>
-      </div>
-
-      <div class="card">
-        <h3>♻️ Zero Waste Initiatives</h3>
-        <p>
-          Introduce waste segregation, composting and
-          reusable cafeteria products.
-        </p>
-      </div>
-
-      <div class="card">
-        <h3>📖 Environmental Awareness</h3>
-        <p>
-          Organize workshops, awareness campaigns and
-          student sustainability clubs.
-        </p>
-      </div>
-
-    </div>
-
-  </div>
-</section>
-
-<!-- ABOUT -->
-
-<section id="about">
-  <div class="container">
-    <div class="card">
-      <h2>About Campus EcoTrack</h2>
-
-      <p>
-        Campus EcoTrack is an Environmental Science project
-        focused on estimating carbon footprints, encouraging
-        sustainable behaviour and supporting environmental
-        awareness across university campuses.
-      </p>
-
-      <p>
-        Our objective is to encourage students, faculty and
-        institutions to take meaningful action towards
-        environmental protection and sustainable development.
-      </p>
-    </div>
-  </div>
-</section>
-
-</main>
-
-<!-- FOOTER -->
-
-<footer>
-  <h3 style="color:#a9dcb1">🌿 Campus EcoTrack</h3>
-
-  <p>
-    Environmental Science Project —
-    Campus Carbon Footprint & Sustainability Portal
-  </p>
-
-  <p>
-    <a href="#home">Home</a> |
-    <a href="#calculator">Calculator</a> |
-    <a href="#knowledge">Knowledge Centre</a> |
-    <a href="auth.html">Login</a> |
-    <a href="enrollment.html">Enroll</a>
-  </p>
-
-  <p>Working Towards a Greener and More Sustainable Future.</p>
-</footer>
-
-<!-- JAVASCRIPT -->
-
-<script>
-
-/* DARK AND LIGHT MODE */
-
-function toggleTheme() {
-  document.body.classList.toggle("dark");
-
-  const isDark = document.body.classList.contains("dark");
-
-  document.getElementById("themeBtn").textContent =
-    isDark ? "☀️ Light Mode" : "🌙 Dark Mode";
-
-  try {
-    localStorage.setItem("ecoTheme", isDark ? "dark" : "light");
-  } catch (error) {
-    // Theme still works if browser storage is unavailable.
-  }
-}
-
-try {
-  if (localStorage.getItem("ecoTheme") === "dark") {
-    document.body.classList.add("dark");
-    document.getElementById("themeBtn").textContent = "☀️ Light Mode";
-  }
-} catch (error) {
-  // Use light mode by default.
-}
-
-
-/* KNOWLEDGE CENTRE */
-
-function toggleKnowledge(card) {
-  card.classList.toggle("active");
-
-  const message = card.querySelector(".learn-more");
-
-  message.textContent = card.classList.contains("active")
-    ? "Close topic −"
-    : "Explore topic +";
-}
-
-
-/* HELPER FUNCTIONS */
-
-function getNumber(id) {
-  return Number(document.getElementById(id).value) || 0;
-}
-
-function hoursWithMinutes(hoursId, minutesId) {
-  return getNumber(hoursId) + getNumber(minutesId) / 60;
-}
-
-function applianceEmission(count, watts, hours) {
-  return count * watts * hours / 1000 * 0.7;
-}
-
-
-/* CALCULATOR */
-
-document.getElementById("carbonForm").addEventListener("submit", function(event) {
-
-  event.preventDefault();
-
-  const inputs = document.querySelectorAll("#carbonForm input[type=number]");
-
-  for (const input of inputs) {
-    if (input.value.trim() === "" ||
-        !Number.isFinite(Number(input.value)) ||
-        Number(input.value) < 0) {
-      alert("Please enter valid non-negative values in all fields.");
-      input.focus();
-      return;
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Log in or sign up · Carbon Footprint</title>
+  <style>
+    :root {
+      --green: #16a34a;
+      --green-dark: #15803d;
+      --green-soft: #dcfce7;
+      --ink: #14281d;
+      --muted: #5b6b61;
+      --line: #d5e3d9;
+      --bg: #f0f7f2;
+      --card: #ffffff;
+      --error: #dc2626;
     }
-  }
 
-  const days = getNumber("travelDays");
-  const passengers = Math.max(1, getNumber("passengers"));
+    * { box-sizing: border-box; }
 
-  if (days > 7) {
-    alert("Travel days cannot exceed 7.");
-    return;
-  }
+    html, body { height: 100%; }
 
-  if (getNumber("acHours") > 24 ||
-      getNumber("fanHours") > 24 ||
-      getNumber("lightHours") > 24 ||
-      getNumber("computerHours") > 24 ||
-      getNumber("chargeHours") > 24 ||
-      getNumber("otherHours") > 24 ||
-      getNumber("acMinutes") > 59 ||
-      getNumber("fanMinutes") > 59) {
-    alert("Hours must be 0–24 and additional minutes must be 0–59.");
-    return;
-  }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 12% 10%, #d6f0de 0, transparent 38%),
+        radial-gradient(circle at 90% 92%, #c9ebd4 0, transparent 40%),
+        var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
 
-  /* TRANSPORT */
+    .card {
+      width: 100%;
+      max-width: 420px;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 32px 28px 28px;
+      box-shadow: 0 10px 30px rgba(21, 128, 61, 0.1);
+    }
 
-  const transport =
-    getNumber("distance") *
-    getNumber("mode") *
-    (days / 7) /
-    passengers;
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 6px;
+    }
 
-  /* ELECTRICITY */
+    .brand svg { width: 34px; height: 34px; flex: none; }
 
-  const ac = applianceEmission(
-    getNumber("acCount"),
-    1500,
-    hoursWithMinutes("acHours", "acMinutes")
-  );
+    .brand h1 {
+      font-size: 1.2rem;
+      margin: 0;
+      letter-spacing: -0.01em;
+    }
 
-  const fans = applianceEmission(
-    getNumber("fanCount"),
-    75,
-    hoursWithMinutes("fanHours", "fanMinutes")
-  );
+    .subtitle {
+      margin: 0 0 22px;
+      color: var(--muted);
+      font-size: 0.93rem;
+      line-height: 1.45;
+    }
 
-  const lights = applianceEmission(
-    getNumber("lightCount"),
-    15,
-    getNumber("lightHours")
-  );
+    .toggle {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      background: var(--green-soft);
+      border-radius: 10px;
+      padding: 4px;
+      margin-bottom: 22px;
+    }
 
-  const computers = applianceEmission(
-    getNumber("computerCount"),
-    100,
-    getNumber("computerHours")
-  );
+    .toggle button {
+      border: 0;
+      background: transparent;
+      padding: 10px 0;
+      font: inherit;
+      font-weight: 600;
+      color: var(--green-dark);
+      border-radius: 7px;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+    }
 
-  const mobile = applianceEmission(
-    getNumber("mobileCount"),
-    10,
-    getNumber("chargeHours")
-  );
+    .toggle button.active {
+      background: var(--green);
+      color: #fff;
+      box-shadow: 0 2px 6px rgba(22, 163, 74, 0.35);
+    }
 
-  const other = applianceEmission(
-    1,
-    getNumber("otherWatts"),
-    getNumber("otherHours")
-  );
+    form { display: none; }
+    form.active { display: block; }
 
-  const electricity = ac + fans + lights + computers + mobile + other;
+    label {
+      display: block;
+      font-size: 0.86rem;
+      font-weight: 600;
+      margin: 14px 0 6px;
+    }
 
-  /* WASTE */
+    input {
+      width: 100%;
+      padding: 11px 12px;
+      font: inherit;
+      color: var(--ink);
+      background: #fff;
+      border: 1.5px solid var(--line);
+      border-radius: 9px;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
 
-  const waste =
-    getNumber("cups") * 0.012 +
-    getNumber("bottles") * 0.08 +
-    getNumber("paper") * 0.005 +
-    getNumber("foodWaste") * 0.5;
+    input:focus {
+      outline: none;
+      border-color: var(--green);
+      box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.2);
+    }
 
-  /* WATER */
+    .forgot {
+      display: block;
+      margin: 10px 0 0;
+      text-align: right;
+      font-size: 0.85rem;
+    }
 
-  const water =
-    getNumber("water") * 0.0003 +
-    getNumber("waterWaste") * 0.0003;
+    a, .link-btn {
+      color: var(--green-dark);
+      font-weight: 600;
+      text-decoration: none;
+    }
 
-  /* FOOD */
+    a:hover { text-decoration: underline; }
 
-  const food =
-    getNumber("vegMeals") * 0.4 +
-    getNumber("nonVegMeals") * 1.5;
+    a:focus-visible, button:focus-visible {
+      outline: 3px solid rgba(22, 163, 74, 0.45);
+      outline-offset: 2px;
+    }
 
-  /* TOTAL */
+    .submit {
+      width: 100%;
+      margin-top: 20px;
+      padding: 12px;
+      border: 0;
+      border-radius: 9px;
+      background: var(--green);
+      color: #fff;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
 
-  const total = transport + electricity + waste + water + food;
+    .submit:hover { background: var(--green-dark); }
+    .submit:disabled { opacity: 0.65; cursor: not-allowed; }
 
-  const categories = [
-    {name:"Transportation", value:transport},
-    {name:"Electricity", value:electricity},
-    {name:"Waste", value:waste},
-    {name:"Water", value:water},
-    {name:"Food", value:food}
-  ];
+    #message {
+      min-height: 1.3em;
+      margin: 16px 0 0;
+      font-size: 0.9rem;
+      line-height: 1.4;
+      text-align: center;
+      color: var(--error);
+    }
 
-  document.getElementById("results").style.display = "block";
+    #message.success { color: var(--green-dark); }
 
-  document.getElementById("totalEmission").textContent =
-    total.toFixed(2);
+    @media (max-width: 440px) {
+      .card { padding: 26px 18px 22px; border-radius: 14px; }
+    }
 
-  document.getElementById("transportResult").textContent =
-    transport.toFixed(2);
+    @media (prefers-reduced-motion: reduce) {
+      * { transition: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <main class="card">
+    <div class="brand">
+      <svg viewBox="0 0 48 48" aria-hidden="true">
+        <circle cx="24" cy="24" r="24" fill="#16a34a"/>
+        <path d="M33 13C20 13 14 20 14 28c0 2 .4 3.800 1.200 5.200C17 31 20 28 25 26c-4 3-7 6-8.300 9.200 1.300.5 2.800.8 4.300.8 8 0 13-7 12-23z" fill="#fff"/>
+      </svg>
+      <h1>Carbon Footprint</h1>
+    </div>
+    <p class="subtitle">Log in to track your emissions, or create an account to get started.</p>
 
-  document.getElementById("electricityResult").textContent =
-    electricity.toFixed(2);
+    <div class="toggle" role="tablist" aria-label="Choose login or sign up">
+      <button type="button" id="tab-login" class="active" role="tab" aria-selected="true">Login</button>
+      <button type="button" id="tab-signup" role="tab" aria-selected="false">Sign Up</button>
+    </div>
 
-  document.getElementById("wasteResult").textContent =
-    waste.toFixed(2);
+    <!-- Login -->
+    <form id="login-form" class="active" novalidate>
+      <label for="login-email">Email</label>
+      <input type="email" id="login-email" autocomplete="email" placeholder="you@university.edu" required />
 
-  document.getElementById("waterResult").textContent =
-    water.toFixed(2);
+      <label for="login-password">Password</label>
+      <input type="password" id="login-password" autocomplete="current-password" placeholder="Your password" required />
 
-  document.getElementById("foodResult").textContent =
-    food.toFixed(2);
+      <a href="#" id="forgot-link" class="forgot">Forgot password?</a>
 
-  document.getElementById("monthlyResult").textContent =
-    (total * 30).toFixed(2);
+      <button type="submit" class="submit" id="login-btn">Login</button>
+    </form>
 
-  document.getElementById("yearlyResult").textContent =
-    (total * 365).toFixed(2);
+    <!-- Sign Up -->
+    <form id="signup-form" novalidate>
+      <label for="signup-name">Full Name</label>
+      <input type="text" id="signup-name" autocomplete="name" placeholder="Your full name" required />
 
-  /* EMISSION MESSAGE */
+      <label for="signup-email">Email</label>
+      <input type="email" id="signup-email" autocomplete="email" placeholder="you@university.edu" required />
 
-  let message = "";
+      <label for="signup-password">Password</label>
+      <input type="password" id="signup-password" autocomplete="new-password" placeholder="At least 6 characters" required />
 
-  if (total < 1) {
-    message = "Your estimated footprint is relatively low. Continue your sustainable habits!";
-  } else if (total < 5) {
-    message = "There is room for improvement. Explore the recommendations below.";
-  } else if (total < 15) {
-    message = "Your estimated footprint is significant. Consider adopting more sustainable practices.";
-  } else {
-    message = "Your estimated footprint is high. Review each category and identify opportunities to reduce emissions.";
-  }
+      <label for="signup-confirm">Confirm Password</label>
+      <input type="password" id="signup-confirm" autocomplete="new-password" placeholder="Re-enter your password" required />
 
-  document.getElementById("resultMessage").textContent = message;
+      <button type="submit" class="submit" id="signup-btn">Sign Up</button>
+    </form>
 
-  /* BREAKDOWN */
+    <p id="message" role="alert" aria-live="polite"></p>
+  </main>
 
-  const breakdown = document.getElementById("breakdown");
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import {
+      getAuth,
+      signInWithEmailAndPassword,
+      createUserWithEmailAndPassword,
+      sendPasswordResetEmail,
+      updateProfile,
+      signOut
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-  breakdown.innerHTML = "";
+    // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+    const firebaseConfig = {
+      apiKey: "AIzaSyA4GYY_znCX4-ntGFKmY9KRtKavzvQVD4I",
+      authDomain: "carbon-footprint-ef8c1.firebaseapp.com",
+      projectId: "carbon-footprint-ef8c1",
+      storageBucket: "carbon-footprint-ef8c1.firebasestorage.app",
+      messagingSenderId: "352925745635",
+      appId: "1:352925745635:web:4afa642e13f9f13a5120d6",
+      measurementId: "G-39L5M35QPR"
+    };
 
-  categories.forEach(category => {
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
 
-    const percentage = total > 0
-      ? category.value / total * 100
-      : 0;
+    const tabLogin = document.getElementById("tab-login");
+    const tabSignup = document.getElementById("tab-signup");
+    const loginForm = document.getElementById("login-form");
+    const signupForm = document.getElementById("signup-form");
+    const messageEl = document.getElementById("message");
 
-    const row = document.createElement("div");
+    function showMessage(text, type = "error") {
+      messageEl.textContent = text;
+      messageEl.className = type === "success" ? "success" : "";
+    }
 
-    const heading = document.createElement("strong");
-    heading.textContent =
-      category.name + ": " + category.value.toFixed(2) +
-      " kg CO₂e (" + percentage.toFixed(1) + "%)";
+    function setMode(mode) {
+      const isLogin = mode === "login";
+      tabLogin.classList.toggle("active", isLogin);
+      tabSignup.classList.toggle("active", !isLogin);
+      tabLogin.setAttribute("aria-selected", String(isLogin));
+      tabSignup.setAttribute("aria-selected", String(!isLogin));
+      loginForm.classList.toggle("active", isLogin);
+      signupForm.classList.toggle("active", !isLogin);
+      showMessage("");
+    }
 
-    const bar = document.createElement("div");
-    bar.className = "bar";
+    tabLogin.addEventListener("click", () => setMode("login"));
+    tabSignup.addEventListener("click", () => setMode("signup"));
 
-    const fill = document.createElement("div");
-    fill.className = "bar-fill";
-    fill.style.width = percentage + "%";
+    function friendlyError(error) {
+      switch (error.code) {
+        case "auth/invalid-email":
+          return "That email address doesn't look right. Check it and try again.";
+        case "auth/missing-password":
+          return "Enter your password.";
+        case "auth/invalid-credential":
+        case "auth/wrong-password":
+        case "auth/user-not-found":
+          return "Incorrect email or password. Check both and try again.";
+        case "auth/email-already-in-use":
+          return "An account with this email already exists. Log in instead.";
+        case "auth/weak-password":
+          return "Password is too weak. Use at least 6 characters.";
+        case "auth/too-many-requests":
+          return "Too many attempts. Wait a few minutes and try again.";
+        case "auth/network-request-failed":
+          return "Network error. Check your internet connection and try again.";
+        case "auth/user-disabled":
+          return "This account has been disabled.";
+        default:
+          return "Something went wrong (" + (error.code || "unknown error") + "). Please try again.";
+      }
+    }
 
-    bar.appendChild(fill);
-    row.appendChild(heading);
-    row.appendChild(bar);
-    breakdown.appendChild(row);
-  });
+    // Login
+    loginForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = document.getElementById("login-email").value.trim();
+      const password = document.getElementById("login-password").value;
+      const btn = document.getElementById("login-btn");
 
-  /* PERSONALIZED RECOMMENDATIONS */
+      if (!email || !password) {
+        showMessage("Enter your email and password.");
+        return;
+      }
 
-  const recommendations = [];
+      btn.disabled = true;
+      btn.textContent = "Logging in...";
+      showMessage("");
 
-  if (transport > 0) {
-    recommendations.push(
-      "Consider walking, cycling, carpooling or using public transport to reduce travel emissions."
-    );
-  }
+      try {
+        await signInWithEmailAndPassword(auth, email, password);
+        window.location.href = "enrollment.html";
+      } catch (error) {
+        showMessage(friendlyError(error));
+        btn.disabled = false;
+        btn.textContent = "Login";
+      }
+    });
 
-  if (ac > 0) {
-    recommendations.push(
-      "Reduce unnecessary AC operation, use efficient settings and maintain AC filters."
-    );
-  }
+    // Sign up
+    signupForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const name = document.getElementById("signup-name").value.trim();
+      const email = document.getElementById("signup-email").value.trim();
+      const password = document.getElementById("signup-password").value;
+      const confirm = document.getElementById("signup-confirm").value;
+      const btn = document.getElementById("signup-btn");
 
-  if (fans > 0 || lights > 0 || computers > 0 || mobile > 0 || other > 0) {
-    recommendations.push(
-      "Switch off electrical appliances when they are not required and choose energy-efficient equipment."
-    );
-  }
+      if (!name || !email || !password || !confirm) {
+        showMessage("Fill in all fields.");
+        return;
+      }
+      if (password.length < 6) {
+        showMessage("Password must be at least 6 characters.");
+        return;
+      }
+      if (password !== confirm) {
+        showMessage("Passwords don't match. Re-enter them and try again.");
+        return;
+      }
 
-  if (getNumber("cups") > 0 || getNumber("bottles") > 0) {
-    recommendations.push(
-      "Use reusable cups and refillable water bottles instead of disposable products."
-    );
-  }
+      btn.disabled = true;
+      btn.textContent = "Creating account...";
+      showMessage("");
 
-  if (getNumber("paper") > 0) {
-    recommendations.push(
-      "Use digital notes and double-sided printing to reduce paper consumption."
-    );
-  }
+      try {
+        const cred = await createUserWithEmailAndPassword(auth, email, password);
+        await updateProfile(cred.user, { displayName: name });
+        await signOut(auth);
 
-  if (getNumber("foodWaste") > 0) {
-    recommendations.push(
-      "Avoid food wastage and support composting of suitable food scraps."
-    );
-  }
+        signupForm.reset();
+        setMode("login");
+        document.getElementById("login-email").value = email;
+        showMessage("Account created. Log in to continue.", "success");
+      } catch (error) {
+        showMessage(friendlyError(error));
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "Sign Up";
+      }
+    });
 
-  if (water > 0) {
-    recommendations.push(
-      "Use water responsibly, repair leaks and support rainwater harvesting."
-    );
-  }
+    // Forgot password
+    document.getElementById("forgot-link").addEventListener("click", async (e) => {
+      e.preventDefault();
+      const email = document.getElementById("login-email").value.trim();
 
-  if (getNumber("nonVegMeals") > 0) {
-    recommendations.push(
-      "Explore balanced, plant-rich meals where suitable."
-    );
-  }
+      if (!email) {
+        showMessage("Enter your email above, then select Forgot password.");
+        return;
+      }
 
-  if (recommendations.length === 0) {
-    recommendations.push(
-      "Continue learning about sustainability and encourage environmental protection."
-    );
-  }
-
-  const recommendationList =
-    document.getElementById("recommendation-results");
-
-  recommendationList.innerHTML = "";
-
-  recommendations.forEach(text => {
-    const li = document.createElement("li");
-    li.textContent = text;
-    recommendationList.appendChild(li);
-  });
-
-  document.getElementById("results").scrollIntoView({
-    behavior: "smooth"
-  });
-
-});
-
-</script>
-
+      try {
+        await sendPasswordResetEmail(auth, email);
+        showMessage("Password reset email sent to " + email + ". Check your inbox.", "success");
+      } catch (error) {
+        showMessage(friendlyError(error));
+      }
+    });
+  </script>
 </body>
 </html>
