@@ -1,56 +1,366 @@
-Result Size: 492 x 610
 <!DOCTYPE html>
-<html>
-<body>
-
-<h1>My First Heading</h1>
-
-<p>My first paragraph.</p>
-
-</body>
-</html>
-
-
-      flag('phone', phoneBad); flag('course', courseBad);
-      return !(nameBad || emailBad || phoneBad || courseBad);
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Enrollment | Campus EcoTrack</title>
+  <style>
+    :root {
+      --header: #14532d;
+      --green: #16a34a;
+      --green-dark: #15803d;
+      --green-soft: #dcfce7;
+      --ink: #14281d;
+      --muted: #5b6b61;
+      --line: #d5e3d9;
+      --bg: #f0f7f2;
+      --error: #dc2626;
     }
-​
-    function show(text, type) { $('msg').textContent = text; $('msg').className = 'msg ' + type; }
-​
-    $('f').addEventListener('submit', function (e) {
-      e.preventDefault();
-      $('msg').className = 'msg';
-      if (!validate()) return;
-​
-      const data = {
-        name: $('name').value.trim(),
-        email: $('email').value.trim(),
-        phone: $('phone').value.trim(),
-        course: $('course').value,
-        mode: document.querySelector('input[name="mode"]:checked').value,
-        startDate: $('startDate').value,
-        message: $('message').value.trim()
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      color: var(--ink);
+      background: var(--bg);
+      line-height: 1.5;
+    }
+
+    /* Header + navigation */
+    header {
+      background: var(--header);
+      color: #fff;
+      padding: 14px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .logo {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #fff;
+      text-decoration: none;
+    }
+
+    nav { display: flex; gap: 6px; flex-wrap: wrap; }
+
+    nav a {
+      color: #fff;
+      text-decoration: none;
+      font-weight: 500;
+      padding: 8px 14px;
+      border-radius: 8px;
+      transition: background 0.2s;
+    }
+
+    nav a:hover { background: rgba(255, 255, 255, 0.15); }
+
+    a:focus-visible, button:focus-visible {
+      outline: 3px solid rgba(22, 163, 74, 0.5);
+      outline-offset: 2px;
+    }
+
+    /* Page heading */
+    .hero {
+      background: var(--header);
+      color: #fff;
+      text-align: center;
+      padding: 8px 20px 70px;
+    }
+
+    .hero h1 { margin: 0; font-size: 1.8rem; letter-spacing: -0.01em; }
+    .hero p { margin: 6px 0 0; color: #bbf7d0; }
+
+    /* Card */
+    main {
+      max-width: 680px;
+      margin: -48px auto 40px;
+      padding: 0 16px;
+    }
+
+    .card {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 26px 24px;
+      box-shadow: 0 8px 24px rgba(21, 128, 61, 0.1);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .field.full { grid-column: 1 / -1; }
+
+    label {
+      display: block;
+      font-size: 0.88rem;
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 11px 12px;
+      font: inherit;
+      color: var(--ink);
+      background: #fff;
+      border: 1.5px solid var(--line);
+      border-radius: 9px;
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: var(--green);
+      box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.2);
+    }
+
+    button[type="submit"] {
+      width: 100%;
+      margin-top: 22px;
+      padding: 14px;
+      border: 0;
+      border-radius: 10px;
+      background: var(--green);
+      color: #fff;
+      font: inherit;
+      font-size: 1.05rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    button[type="submit"]:hover { background: var(--green-dark); }
+    button[type="submit"]:disabled { opacity: 0.7; cursor: not-allowed; }
+
+    #message {
+      margin: 16px 0 0;
+      text-align: center;
+      font-size: 0.95rem;
+      font-weight: 600;
+      min-height: 1.4em;
+    }
+
+    #message.error { color: var(--error); }
+    #message.success { color: var(--green-dark); }
+
+    footer {
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.85rem;
+      padding: 0 16px 30px;
+    }
+
+    @media (max-width: 560px) {
+      header { padding: 12px 16px; justify-content: center; }
+      .grid { grid-template-columns: 1fr; }
+      .card { padding: 20px 16px; }
+      .hero h1 { font-size: 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <a class="logo" href="index.html">🌿 Campus EcoTrack</a>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="index.html#calculator">Calculator</a>
+      <a href="auth.html">Login</a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <h1>Campus EcoTrack Enrollment</h1>
+    <p>Join the initiative and help us measure and reduce campus emissions.</p>
+  </section>
+
+  <main>
+    <div class="card">
+      <form id="enroll-form" novalidate>
+        <div class="grid">
+          <div class="field full">
+            <label for="fullName">Full Name</label>
+            <input type="text" id="fullName" name="fullName" autocomplete="name" placeholder="Your full name" required />
+          </div>
+
+          <div class="field">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" autocomplete="email" placeholder="you@university.edu" required />
+          </div>
+
+          <div class="field">
+            <label for="phone">Phone Number</label>
+            <input type="tel" id="phone" name="phone" inputmode="numeric" maxlength="10" autocomplete="tel" placeholder="10-digit number" required />
+          </div>
+
+          <div class="field full">
+            <label for="college">University / College Name</label>
+            <input type="text" id="college" name="college" autocomplete="organization" placeholder="Your university or college" required />
+          </div>
+
+          <div class="field">
+            <label for="course">Course / Branch</label>
+            <select id="course" name="course" required>
+              <option value="">Select course</option>
+              <option>B.Tech</option>
+              <option>B.Sc</option>
+              <option>B.Com</option>
+              <option>B.A</option>
+              <option>M.Tech</option>
+              <option>M.Sc</option>
+              <option>MBA</option>
+              <option>Other</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="year">Year of Study</label>
+            <select id="year" name="year" required>
+              <option value="">Select year</option>
+              <option>1st Year</option>
+              <option>2nd Year</option>
+              <option>3rd Year</option>
+              <option>4th Year</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="distance">Daily Travel Distance (in km)</label>
+            <input type="number" id="distance" name="distance" min="0" step="0.1" placeholder="e.g. 8" required />
+          </div>
+
+          <div class="field">
+            <label for="transport">Main Mode of Transport</label>
+            <select id="transport" name="transport" required>
+              <option value="">Select transport</option>
+              <option>Walking</option>
+              <option>Cycle</option>
+              <option>Bus</option>
+              <option>Bike / Scooter</option>
+              <option>Car</option>
+              <option>Metro / Train</option>
+            </select>
+          </div>
+
+          <div class="field full">
+            <label for="electricity">Daily Electricity Usage (in hours)</label>
+            <input type="number" id="electricity" name="electricity" min="0" max="24" step="0.5" placeholder="Hours per day, e.g. 6" required />
+          </div>
+        </div>
+
+        <button type="submit" id="submit-btn">Submit Enrollment</button>
+        <p id="message" role="alert" aria-live="polite"></p>
+      </form>
+    </div>
+  </main>
+
+  <footer>Campus EcoTrack · Environmental Science Project</footer>
+
+  <script>
+    // Paste your Google Apps Script Web App URL here
+    const SCRIPT_URL = "PASTE_YOUR_URL_HERE";
+
+    const form = document.getElementById("enroll-form");
+    const btn = document.getElementById("submit-btn");
+    const msg = document.getElementById("message");
+
+    function showMessage(text, type) {
+      msg.textContent = text;
+      msg.className = type || "";
+    }
+
+    function validate(data) {
+      const labels = {
+        fullName: "Full Name",
+        email: "Email",
+        phone: "Phone Number",
+        college: "University / College Name",
+        course: "Course / Branch",
+        year: "Year of Study",
+        distance: "Daily Travel Distance",
+        transport: "Main Mode of Transport",
+        electricity: "Daily Electricity Usage"
       };
-​
-      $('btn').disabled = true;
-      $('btn').textContent = 'Submitting...';
-​
-      google.script.run
-        .withSuccessHandler(function () {
-          show('🎉 Enrollment submitted successfully!', 'success');
-          $('f').reset();
-          $('btn').disabled = false;
-          $('btn').textContent = 'Enroll Now';
-        })
-        .withFailureHandler(function (err) {
-          show('Error: ' + err.message, 'error');
-          $('btn').disabled = false;
-          $('btn').textContent = 'Enroll Now';
-        })
-        .saveEnrollment(data);
+
+      for (const key in labels) {
+        if (!data[key] || String(data[key]).trim() === "") {
+          return "Please fill in: " + labels[key] + ".";
+        }
+      }
+
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
+        return "Enter a valid email address.";
+      }
+      if (!/^\d{10}$/.test(data.phone)) {
+        return "Phone number must be exactly 10 digits.";
+      }
+      if (isNaN(Number(data.distance)) || Number(data.distance) < 0 || Number(data.distance) > 500) {
+        return "Enter a daily travel distance between 0 and 500 km.";
+      }
+      if (isNaN(Number(data.electricity)) || Number(data.electricity) < 0 || Number(data.electricity) > 24) {
+        return "Daily electricity usage must be between 0 and 24 hours.";
+      }
+      return "";
+    }
+
+    form.addEventListener("submit", async function (e) {
+      e.preventDefault();
+      showMessage("", "");
+
+      const data = {
+        fullName: form.fullName.value.trim(),
+        email: form.email.value.trim(),
+        phone: form.phone.value.trim(),
+        college: form.college.value.trim(),
+        course: form.course.value,
+        year: form.year.value,
+        distance: form.distance.value,
+        transport: form.transport.value,
+        electricity: form.electricity.value
+      };
+
+      const problem = validate(data);
+      if (problem) {
+        showMessage(problem, "error");
+        return;
+      }
+
+      if (SCRIPT_URL === "PASTE_YOUR_URL_HERE") {
+        showMessage("Something went wrong, try again", "error");
+        console.error("SCRIPT_URL is not set. Paste your Apps Script Web App URL in enrollment.html.");
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = "Submitting...";
+
+      try {
+        const response = await fetch(SCRIPT_URL, {
+          method: "POST",
+          body: new URLSearchParams(data)
+        });
+        const result = await response.json();
+
+        if (result.result === "success") {
+          showMessage("Enrollment submitted successfully!", "success");
+          form.reset();
+        } else {
+          showMessage("Something went wrong, try again", "error");
+        }
+      } catch (error) {
+        console.error(error);
+        showMessage("Something went wrong, try again", "error");
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "Submit Enrollment";
+      }
     });
   </script>
 </body>
 </html>
-
-
