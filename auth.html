@@ -1,73 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Log in or sign up · Carbon Footprint</title>
+  <style>
+    :root {
+      --green: #16a34a;
+      --green-dark: #15803d;
+      --green-soft: #dcfce7;
+      --ink: #14281d;
+      --muted: #5b6b61;
+      --line: #d5e3d9;
+      --bg: #f0f7f2;
+      --card: #ffffff;
+      --error: #dc2626;
+    }
 
-<form id="loginForm">
-  <input
-    type="email"
-    id="email"
-    placeholder="Enter your email"
-    required
-  />
+    * { box-sizing: border-box; }
 
-  <input
-    type="password"
-    id="password"
-    placeholder="Enter your password"
-    required
-  />
+    html, body { height: 100%; }
 
-  <div style="text-align: right; margin: 10px 0;">
-    <a href="#" id="forgotPassword"
-       style="color: #16a34a; text-decoration: none;">
-      Forgot Password?
-    </a>
-  </div>
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 12% 10%, #d6f0de 0, transparent 38%),
+        radial-gradient(circle at 90% 92%, #c9ebd4 0, transparent 40%),
+        var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
 
-  <button type="submit">Login</button>
+    .card {
+      width: 100%;
+      max-width: 420px;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 32px 28px 28px;
+      box-shadow: 0 10px 30px rgba(21, 128, 61, 0.1);
+    }
 
-  <p id="message"></p>
-</form>
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 6px;
+    }
 
-<script type="module">
-  import { initializeApp }
-    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    .brand svg { width: 34px; height: 34px; flex: none; }
 
-  import {
-    getAuth,
-    sendPasswordResetEmail
-  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    .brand h1 {
+      font-size: 1.2rem;
+      margin: 0;
+      letter-spacing: -0.01em;
+    }
 
-  const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "carbon-footprint-ef8c1.firebaseapp.com",
-    projectId: "carbon-footprint-ef8c1",
-    storageBucket: "carbon-footprint-ef8c1.firebasestorage.app",
-    messagingSenderId: "352925745635",
-    appId: "1:4afa642e13f9f13a5120d6"
-  };
+    .subtitle {
+      margin: 0 0 22px;
+      color: var(--muted);
+      font-size: 0.93rem;
+      line-height: 1.45;
+    }
 
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
+    .toggle {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      background: var(--green-soft);
+      border-radius: 10px;
+      padding: 4px;
+      margin-bottom: 22px;
+    }
 
-  document.getElementById("forgotPassword")
-    .addEventListener("click", async (e) => {
+    .toggle button {
+      border: 0;
+      background: transparent;
+      padding: 10px 0;
+      font: inherit;
+      font-weight: 600;
+      color: var(--green-dark);
+      border-radius: 7px;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+    }
+
+    .toggle button.active {
+      background: var(--green);
+      color: #fff;
+      box-shadow: 0 2px 6px rgba(22, 163, 74, 0.35);
+    }
+
+    form { display: none; }
+    form.active { display: block; }
+
+    label {
+      display: block;
+      font-size: 0.86rem;
+      font-weight: 600;
+      margin: 14px 0 6px;
+    }
+
+    input {
+      width: 100%;
+      padding: 11px 12px;
+      font: inherit;
+      color: var(--ink);
+      background: #fff;
+      border: 1.5px solid var(--line);
+      border-radius: 9px;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: var(--green);
+      box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.2);
+    }
+
+    .forgot {
+      display: block;
+      margin: 10px 0 0;
+      text-align: right;
+      font-size: 0.85rem;
+    }
+
+    a, .link-btn {
+      color: var(--green-dark);
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    a:hover { text-decoration: underline; }
+
+    a:focus-visible, button:focus-visible {
+      outline: 3px solid rgba(22, 163, 74, 0.45);
+      outline-offset: 2px;
+    }
+
+    .submit {
+      width: 100%;
+      margin-top: 20px;
+      padding: 12px;
+      border: 0;
+      border-radius: 9px;
+      background: var(--green);
+      color: #fff;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .submit:hover { background: var(--green-dark); }
+    .submit:disabled { opacity: 0.65; cursor: not-allowed; }
+
+    #message {
+      min-height: 1.3em;
+      margin: 16px 0 0;
+      font-size: 0.9rem;
+      line-height: 1.4;
+      text-align: center;
+      color: var(--error);
+    }
+
+    #message.success { color: var(--green-dark); }
+
+    @media (max-width: 440px) {
+      .card { padding: 26px 18px 22px; border-radius: 14px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * { transition: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <main class="card">
+    <div class="brand">
+      <svg viewBox="0 0 48 48" aria-hidden="true">
+        <circle cx="24" cy="24" r="24" fill="#16a34a"/>
+        <path d="M33 13C20 13 14 20 14 28c0 2 .4 3.800 1.200 5.200C17 31 20 28 25 26c-4 3-7 6-8.300 9.200 1.300.5 2.800.8 4.300.8 8 0 13-7 12-23z" fill="#fff"/>
+      </svg>
+      <h1>Carbon Footprint</h1>
+    </div>
+    <p class="subtitle">Log in to track your emissions, or create an account to get started.</p>
+
+    <div class="toggle" role="tablist" aria-label="Choose login or sign up">
+      <button type="button" id="tab-login" class="active" role="tab" aria-selected="true">Login</button>
+      <button type="button" id="tab-signup" role="tab" aria-selected="false">Sign Up</button>
+    </div>
+
+    <!-- Login -->
+    <form id="login-form" class="active" novalidate>
+      <label for="login-email">Email</label>
+      <input type="email" id="login-email" autocomplete="email" placeholder="you@university.edu" required />
+
+      <label for="login-password">Password</label>
+      <input type="password" id="login-password" autocomplete="current-password" placeholder="Your password" required />
+
+      <a href="#" id="forgot-link" class="forgot">Forgot password?</a>
+
+      <button type="submit" class="submit" id="login-btn">Login</button>
+    </form>
+
+    <!-- Sign Up -->
+    <form id="signup-form" novalidate>
+      <label for="signup-name">Full Name</label>
+      <input type="text" id="signup-name" autocomplete="name" placeholder="Your full name" required />
+
+      <label for="signup-email">Email</label>
+      <input type="email" id="signup-email" autocomplete="email" placeholder="you@university.edu" required />
+
+      <label for="signup-password">Password</label>
+      <input type="password" id="signup-password" autocomplete="new-password" placeholder="At least 6 characters" required />
+
+      <label for="signup-confirm">Confirm Password</label>
+      <input type="password" id="signup-confirm" autocomplete="new-password" placeholder="Re-enter your password" required />
+
+      <button type="submit" class="submit" id="signup-btn">Sign Up</button>
+    </form>
+
+    <p id="message" role="alert" aria-live="polite"></p>
+  </main>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import {
+      getAuth,
+      signInWithEmailAndPassword,
+      createUserWithEmailAndPassword,
+      sendPasswordResetEmail,
+      updateProfile,
+      signOut
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+    // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+    const firebaseConfig = {
+      apiKey: "AIzaSyA4GYY_znCX4-ntGFKmY9KRtKavzvQVD4I",
+      authDomain: "carbon-footprint-ef8c1.firebaseapp.com",
+      projectId: "carbon-footprint-ef8c1",
+      storageBucket: "carbon-footprint-ef8c1.firebasestorage.app",
+      messagingSenderId: "352925745635",
+      appId: "1:352925745635:web:4afa642e13f9f13a5120d6",
+      measurementId: "G-39L5M35QPR"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    const tabLogin = document.getElementById("tab-login");
+    const tabSignup = document.getElementById("tab-signup");
+    const loginForm = document.getElementById("login-form");
+    const signupForm = document.getElementById("signup-form");
+    const messageEl = document.getElementById("message");
+
+    function showMessage(text, type = "error") {
+      messageEl.textContent = text;
+      messageEl.className = type === "success" ? "success" : "";
+    }
+
+    function setMode(mode) {
+      const isLogin = mode === "login";
+      tabLogin.classList.toggle("active", isLogin);
+      tabSignup.classList.toggle("active", !isLogin);
+      tabLogin.setAttribute("aria-selected", String(isLogin));
+      tabSignup.setAttribute("aria-selected", String(!isLogin));
+      loginForm.classList.toggle("active", isLogin);
+      signupForm.classList.toggle("active", !isLogin);
+      showMessage("");
+    }
+
+    tabLogin.addEventListener("click", () => setMode("login"));
+    tabSignup.addEventListener("click", () => setMode("signup"));
+
+    function friendlyError(error) {
+      switch (error.code) {
+        case "auth/invalid-email":
+          return "That email address doesn't look right. Check it and try again.";
+        case "auth/missing-password":
+          return "Enter your password.";
+        case "auth/invalid-credential":
+        case "auth/wrong-password":
+        case "auth/user-not-found":
+          return "Incorrect email or password. Check both and try again.";
+        case "auth/email-already-in-use":
+          return "An account with this email already exists. Log in instead.";
+        case "auth/weak-password":
+          return "Password is too weak. Use at least 6 characters.";
+        case "auth/too-many-requests":
+          return "Too many attempts. Wait a few minutes and try again.";
+        case "auth/network-request-failed":
+          return "Network error. Check your internet connection and try again.";
+        case "auth/user-disabled":
+          return "This account has been disabled.";
+        default:
+          return "Something went wrong (" + (error.code || "unknown error") + "). Please try again.";
+      }
+    }
+
+    // Login
+    loginForm.addEventListener("submit", async (e) => {
       e.preventDefault();
+      const email = document.getElementById("login-email").value.trim();
+      const password = document.getElementById("login-password").value;
+      const btn = document.getElementById("login-btn");
 
-      const email = document.getElementById("email").value.trim();
-      const message = document.getElementById("message");
+      if (!email || !password) {
+        showMessage("Enter your email and password.");
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = "Logging in...";
+      showMessage("");
+
+      try {
+        await signInWithEmailAndPassword(auth, email, password);
+        window.location.href = "enrollment.html";
+      } catch (error) {
+        showMessage(friendlyError(error));
+        btn.disabled = false;
+        btn.textContent = "Login";
+      }
+    });
+
+    // Sign up
+    signupForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const name = document.getElementById("signup-name").value.trim();
+      const email = document.getElementById("signup-email").value.trim();
+      const password = document.getElementById("signup-password").value;
+      const confirm = document.getElementById("signup-confirm").value;
+      const btn = document.getElementById("signup-btn");
+
+      if (!name || !email || !password || !confirm) {
+        showMessage("Fill in all fields.");
+        return;
+      }
+      if (password.length < 6) {
+        showMessage("Password must be at least 6 characters.");
+        return;
+      }
+      if (password !== confirm) {
+        showMessage("Passwords don't match. Re-enter them and try again.");
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = "Creating account...";
+      showMessage("");
+
+      try {
+        const cred = await createUserWithEmailAndPassword(auth, email, password);
+        await updateProfile(cred.user, { displayName: name });
+        await signOut(auth);
+
+        signupForm.reset();
+        setMode("login");
+        document.getElementById("login-email").value = email;
+        showMessage("Account created. Log in to continue.", "success");
+      } catch (error) {
+        showMessage(friendlyError(error));
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "Sign Up";
+      }
+    });
+
+    // Forgot password
+    document.getElementById("forgot-link").addEventListener("click", async (e) => {
+      e.preventDefault();
+      const email = document.getElementById("login-email").value.trim();
 
       if (!email) {
-        message.textContent =
-          "Please enter your email address first.";
+        showMessage("Enter your email above, then select Forgot password.");
         return;
       }
 
       try {
         await sendPasswordResetEmail(auth, email);
-        message.textContent =
-          "Password reset link sent. Check your email.";
+        showMessage("Password reset email sent to " + email + ". Check your inbox.", "success");
       } catch (error) {
-        console.error(error);
-        message.textContent =
-          "Could not send reset email. Please try again.";
+        showMessage(friendlyError(error));
       }
     });
-</script>
+  </script>
+</body>
+</html>
